@@ -15,6 +15,7 @@ from .utils import EversignException
 
 
 class Client(object):
+    businesses = None
     business_id = None
     debug = False
 
@@ -32,6 +33,15 @@ class Client(object):
         else:
             self.fetch_businesses()
 
+    def set_selected_business(self, business):
+        self.business_id = business.business_id
+
+    def set_selected_business_by_id(self, business_id):
+        self.business_id = business_id
+
+    def get_businesses(self):
+        return self.businesses
+
     def fetch_businesses(self):
         """
         Documentation: https://eversign.com/api/documentation/methods#list-businesses
@@ -46,6 +56,7 @@ class Client(object):
         response = self._request('/business', return_type=Business)
 
         if response:
+            self.businesses = response
             for business in response:
                 if business.is_primary:
                     self.business_id = business.business_id

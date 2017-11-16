@@ -29,7 +29,7 @@ In your Python application, import `eversign` and pass authentication informatio
 
 ````python
 import eversign
-client = eversign.Client("ACCESS_KEY")
+client = eversign.Client('ACCESS_KEY')
 ````
 
 The client will automatically pick up the primary business to use.
@@ -38,17 +38,25 @@ The client will automatically pick up the primary business to use.
 Using the `get_businesses()` function all businesses on the eversign account will be fetched and listed along with their Business IDs.
 
 ````python
-print(client.get_businesses()[0])
+businesses = client.get_businesses()
+print(businesses[0].business_id)
+client.set_selected_business(businesses[1])
 ````
 
+If you know the `businessId` beforehand you can also set it with `set_selected_business_by_id(business_id)`
+
+```
+client.set_selected_business_by_id(1337)
+```
+
 ### Create document from template [Method: Use Template]
-To create a document based on an already created template you can use the class `Template` (they are identical). In order to identify which template should be used, please set the template's ID `template_id = "MY_TEMPLATE_ID"`.
+To create a document based on an already created template you can use the class `Template` (they are identical). In order to identify which template should be used, please set the template's ID `template_id = 'MY_TEMPLATE_ID'`.
 
 ````python
 template = eversign.Template()
-template.template_id = "MY_TEMPLATE_ID"
-template.title = "Tile goes here"
-template.message = "test message"
+template.template_id = 'MY_TEMPLATE_ID'
+template.title = 'Tile goes here'
+template.message = 'test message'
 ````
 
 #### Fill signing roles [Method: Use Template]
@@ -56,9 +64,9 @@ A template's signing and CC roles are filled just using the functions below. Eac
 
 ````python
 signer = eversign.Signer()
-signer.role = "Testrole"
-signer.name = "John Doe"
-signer.email = "john.doe@eversign.com"
+signer.role = 'Testrole'
+signer.name = 'John Doe'
+signer.email = 'john.doe@eversign.com'
 
 template.add_signer(signer)
 ````
@@ -75,9 +83,9 @@ A document is created by instantiating the `Document` object and setting your pr
 
 ````python
 document = eversign.Document()
-document.template_id = "MY_TEMPLATE_ID"
-document.title = "Tile goes here"
-document.message = "test message"
+document.template_id = 'MY_TEMPLATE_ID'
+document.title = 'Tile goes here'
+document.message = 'test message'
 ````
 
 #### Adding signers to a document [Method: Create Document]
@@ -85,9 +93,9 @@ Signers are added to an existing document object by instantiating the `Signer` o
 
 ````python
 signer = eversign.Signer()
-signer.role = "Testrole"
-signer.name = "John Doe"
-signer.email = "john.doe@eversign.com"
+signer.role = 'Testrole'
+signer.name = 'John Doe'
+signer.email = 'john.doe@eversign.com'
 
 document.add_signer(signer)
 ````
@@ -97,9 +105,9 @@ Recipients (CCs) are added by instantiating the `Recipient` object and appending
 
 ````python
 recipient = eversign.Recipient()
-recipient.role = "Testrole"
-recipient.name = "John Doe"
-recipient.email = "john.doe@eversign.com"
+recipient.role = 'Testrole'
+recipient.name = 'John Doe'
+recipient.email = 'john.doe@eversign.com'
 
 document.add_recipient(recipient)
 ````
@@ -109,8 +117,8 @@ Files are added to a document by instantiating an `File` object. The standard wa
 
 ````python
 file = eversign.File()
-file.file_name = "Test"
-file.file_url = "test.pdf"
+file.file_name = 'Test'
+file.file_url = 'test.pdf'
 
 document.add_file(file)
 ````
@@ -125,9 +133,9 @@ Signature and Initials fields are required to be assigned to a specific signer. 
 ````python
 field = eversign.SignatureField()
 
-field.identifier = "Test Signature"
-field.x = "120.43811219947"
-field.y = "479.02760463045"
+field.identifier = 'Test Signature'
+field.x = '120.43811219947'
+field.y = '479.02760463045'
 field.page = 1
 field.signer = 5
 field.width = 120
@@ -146,20 +154,18 @@ saved_document = client.create_document(document)
 
 #### Loading a document
 
-A document is loaded by either passing a `Document` into the `get_document()` function, or passing its document hash `get_document(document_hash="MY_HASH")`. Attention: a provided document_hash overrides a passed document.
+A document is loaded by either passing a `Document` into the `get_document()` function, or passing its document hash `get_document(document_hash='MY_HASH')`. Attention: a provided document_hash overrides a passed document.
 
 ```python
-document = client.get_document(document_hash="MY_HASH")
+document = client.get_document(document_hash='MY_HASH')
 ```
 
 #### Downloading the raw or final document
 A document can be downloaded either in its raw or in its final (completed) state. In both cases, the respective method must contain the document object and a path to save the PDF document to. When downloading a final document, you can choose to attach the document's Audit Trail by setting the third parameter to `1`.
 
 ```python
-client.download_final_pdf(document, "final.pdf")
-# audit_trail defaults to 1 (True)
-# client.download_final_pdf(document, "final.pdf", audit_trail=0)
-client.download_raw_document(document, "raw.pdf")
+client.download_final_document_to_path(document, 'final.pdf', audit_trail=0)
+client.download_raw_document_to_path(document, 'raw.pdf')
 ```
 
 #### Get a list of documents or templates
@@ -171,14 +177,14 @@ client.list_templates()
 
 # Other Methods for getting documents are:
 
-client.list_documents("my_action_required")
-client.list_documents("waiting_for_others")
-client.list_documents("completed")
-client.list_documents("drafts")
-client.list_documents("cancelled")
+client.list_documents('my_action_required')
+client.list_documents('waiting_for_others')
+client.list_documents('completed')
+client.list_documents('drafts')
+client.list_documents('cancelled')
 
-client.list_templates("templates_archived")
-client.list_templates("template_drafts")
+client.list_templates('templates_archived')
+client.list_templates('template_drafts')
 
 ```
 

@@ -7,5 +7,5 @@ import eversign
 
 client = eversign.Client(config.access_key)
 
-businessess = client.fetch_businesses()
-pprint(businessess)
+businesses = client.get_businesses()
+print(businesses[0].business_id)

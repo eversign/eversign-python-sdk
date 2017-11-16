@@ -12,7 +12,7 @@ document_template.message = 'my message'
 signer = eversign.Signer(name='Jane Doe', email=config.signer_email, role='Client')
 document_template.add_signer(signer)
 
-field = eversign.Field()
+field = eversign.TextField()
 field.identifier = config.field_identifier
 field.value = 'value 1'
 document_template.add_field(field)

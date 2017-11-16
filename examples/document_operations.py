@@ -6,10 +6,13 @@ import eversign
 
 
 client = eversign.Client(config.access_key)
-#
-# documents = client.get_all_documents()
-# print(str(len(documents)) + ' all_documents found')
-#
+# client.set_selected_business_by_id(1534)
+# businesses = client.fetch_businesses()
+# client.set_selected_business(businesses[1])
+
+documents = client.get_all_documents()
+print(str(len(documents)) + ' all_documents found')
+
 # documents = client.get_cancelled_documents()
 # print(str(len(documents)) + ' cancelled_documents found')
 #
@@ -29,23 +32,23 @@ client = eversign.Client(config.access_key)
 # print(str(len(documents)) + ' draft_templates found')
 #
 
-document = client.get_document_by_hash(config.document_hash)
-print(document.document_hash)
+# document = client.get_document_by_hash(config.document_hash)
+# print(document.document_hash)
 # client.download_final_document_to_path(document, './final.pdf', True)
 # client.download_raw_document_to_path(document, './raw.pdf')
-
-for signer in document.signers:
-    try:
-        client.send_reminder_for_document(document, signer)
-    except Exception as e:
-        print('could not send reminder for ' + signer.email + ': ' + str(e))
-
-try:
-    client.cancel_document(document)
-except Exception as e:
-    print('could not cancel document: ' + str(e))
-
-try:
-    client.delete_document(document)
-except Exception as e:
-    print('could not delete document: ' + str(e))
+#
+# for signer in document.signers:
+#     try:
+#         client.send_reminder_for_document(document, signer)
+#     except Exception as e:
+#         print('could not send reminder for ' + signer.email + ': ' + str(e))
+#
+# try:
+#     client.cancel_document(document)
+# except Exception as e:
+#     print('could not cancel document: ' + str(e))
+#
+# try:
+#     client.delete_document(document)
+# except Exception as e:
+#     print('could not delete document: ' + str(e))
