@@ -19,6 +19,7 @@ class Field(BaseObject):
         self.__dict__['validate_on_change'] = False
 
     def validate(self):
+        print('validate')
         self._model.validate()
         self.validate_validation()
         self.validate_textfields()

@@ -7,8 +7,9 @@ import os.path
 import os
 import errno
 import logging
+from pprint import pprint
 
-from .document import Document
+from .document import Document, Template
 from .business import Business
 from .utils import EversignException
 
@@ -29,9 +30,9 @@ class Client(object):
         if business_id:
             self.business_id = business_id
         else:
-            self.get_businesses()
+            self.fetch_businesses()
 
-    def get_businesses(self):
+    def fetch_businesses(self):
         """
         Documentation: https://eversign.com/api/documentation/methods#list-businesses
 
@@ -51,7 +52,7 @@ class Client(object):
 
         return response
 
-    def create_document(self, document, business_id=None):
+    def create_document(self, document):
         """
         Documentation: https://eversign.com/api/documentation/methods#create-document
 
@@ -59,7 +60,6 @@ class Client(object):
 
         Args:
             document (eversign.Document): Document to be created.
-            business_id (int, optional): Defaults to the primary business_id.
 
         Returns:
             eversign.Document object for success, raises Exception for failure.
@@ -74,10 +74,10 @@ class Client(object):
                 file.file_url = None
                 file.file_id = response['file_id']
 
-        return self._request('/document', business_id=business_id, method="POST", data=document.to_primitive(),
+        return self._request('/document', method="POST", data=document.to_primitive(),
                              return_type=Document)
 
-    def create_document_from_template(self, template, business_id=None):
+    def create_document_from_template(self, template):
         """
         Documentation: https://eversign.com/api/documentation/methods#use-template
 
@@ -85,13 +85,12 @@ class Client(object):
 
         Args:
             template (eversign.Document): Document to be created.
-            business_id (int, optional): Defaults to the primary business_id.
 
         Returns:
             eversign.Document object for success, raises Exception for failure.
 
         """
-        if type(template) is Document:
+        if type(template) is Template:
             template.validate()
             primitive_document = template.to_primitive()
 
@@ -111,95 +110,111 @@ class Client(object):
                 'fields': template._get_fields_for_template()
             }
 
-            return self._request('/document', business_id=business_id, method='POST', data=data, return_type=Document)
+            return self._request('/document', method='POST', data=data, return_type=Document)
         else:
             raise Exception
 
-    def get_template(self, template_id, business_id=None):
-        """
-        Documentation: https://eversign.com/api/documentation/methods#get-document-template
-
-        Gets a single template
-
-        Args:
-            template_id (int)
-            business_id (int, optional): Defaults to the primary business_id.
-
-        Returns:
-            eversign.Document object for success, raises Exception for failure.
-
-        """
-        return self._request('/document', business_id=business_id,
-                             params={'document_hash': template_id},
-                             return_type=Document)
-
-    def get_document(self, document, document_hash=None, business_id=None):
+    def get_document_by_hash(self, document_hash=None):
         """
         Documentation: https://eversign.com/api/documentation/methods#get-document-template
 
         Gets a single document.
 
         Args:
-            document(eversign.Document)
             document_hash (str): If a document_hash is specified, it will override the document argument.
-            business_id (int, optional): Defaults to the primary business_id.
 
         Returns:
             eversign.Document object for success, raises Exception for failure.
 
         """
-        return self.get_template(document_hash or document.document_hash, business_id)
+        return self._request('/document', params={'document_hash': document_hash},
+                             return_type=Document)
 
-    def list_templates(self, type="templates", business_id=None):
-        """
-        Documentation: https://eversign.com/api/documentation/methods#list-templates
-
-        Lists all the templates with specified type.
-
-        Args:
-            type (str): Allowed values:
-                - "templates"
-                - "templates_archived"
-                - "template_drafts"
-                Defaults to "templates"
-            business_id (int, optional): Defaults to the primary business_id.
-
-        Returns:
-            List of eversign.Document object for success, raises Exception for failure.
-
-        """
-        if type in ['templates', 'templates_archived', 'template_drafts']:
-            return self._request('/document', business_id=business_id, params={'type': type},
-                                 return_type=Document)
-        else:
-            return Exception
-
-    def list_documents(self, type="all", business_id=None):
+    def get_all_documents(self):
         """
         Documentation: https://eversign.com/api/documentation/methods#list-documents
 
-        Lists all the templates with specified type.
-
-        Args:
-            type (str): Allowed values:
-                - "all"
-                - "my_action_required"
-                - "waiting_for_others"
-                - "completed"
-                - "drafts"
-                - "cancelled"
-                Defaults to "all"
-            business_id (int, optional): Defaults to the primary business_id.
+        Retrieves the documents from eversign API
 
         Returns:
             List of eversign.Document object for success, raises Exception for failure.
 
         """
-        if type in ['all', 'my_action_required', 'waiting_for_others', 'completed', 'drafts', 'cancelled']:
-            return self._request('/document', business_id=business_id, params={'type': type},
-                                 return_type=Document)
+        return self._get_documents('all')
 
-    def send_reminder(self, document, signer_id, document_hash=None):
+    def get_cancelled_documents(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Retrieves all canceled documents from eversign API
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('cancelled')
+
+    def get_action_required_documents(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Returns all Documents for the Client which require Actions
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('my_action_required')
+
+    def get_waiting_for_others_documents(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Returns all Documents for the Client which are waiting on responses
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('waiting_for_others')
+
+    def get_templates(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Returns a list of Documents which are set to be Templates
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('templates')
+
+    def get_archived_templates(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Returns a list of Documents which are set to be Templates
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('templates_archived')
+
+    def get_draft_templates(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Returns a list of Documents which are set to be Templates
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('template_drafts')
+
+    def send_reminder_for_document(self, document, signer):
         """
         Documentation: https://eversign.com/api/documentation/methods#send-reminder
 
@@ -207,20 +222,18 @@ class Client(object):
 
         Args:
             document (eversign.Document)
-            signer_id (int)
-            document_hash (str, optional): If a document_hash is specified, it will override the document argument.
+            signer (eversign.Signer)
 
         Returns:
             JSON Response from the API
 
         """
         return self._request('/send_reminder', method="POST", data={
-            'document_hash': document_hash or document.document_hash,
-            'signer_id': signer_id
-            }
-        )
+            'document_hash': self._get_document_hash(document),
+            'signer_id': signer.id
+        })
 
-    def cancel_document(self, document, business_id=None, document_hash=None):
+    def cancel_document(self, document):
         """
         Documentation: https://eversign.com/api/documentation/methods#cancel-document
 
@@ -228,16 +241,14 @@ class Client(object):
 
         Args:
             document (eversign.Document)
-            business_id (int, optional): Defaults to the primary business_id.
-            document_hash (str, optional): If a document_hash is specified, it will override the document argument.
 
         Returns:
             True for success, raises exception on failure.
 
         """
-        return self.delete_document(document, business_id=business_id, cancel=1, document_hash=document_hash)
+        return self.delete_document(document, 1)
 
-    def delete_document(self, document, business_id=None, cancel=None, document_hash=None):
+    def delete_document(self, document, cancel=None):
         """
         Documentation: https://eversign.com/api/documentation/methods#delete-document
 
@@ -245,9 +256,7 @@ class Client(object):
 
         Args:
             document (eversign.Document)
-            business_id (int, optional): Defaults to the primary business_id.
             cancel (bool, optional)
-            document_hash (str, optional): If a document_hash is specified, it will override the document argument.
 
         Returns:
             True for success, raises exception on failure.
@@ -256,21 +265,19 @@ class Client(object):
         params = dict()
         if type(document) is Document:
             if document.is_cancelled or document.is_draft:
-                params['document_hash'] = document.document_hash
+                params['document_hash'] = self._get_document_hash(document)
             else:
                 raise Exception(
                     'Only drafts and cancelled documents can be deleted')
-        elif document_hash:
-            params['document_hash'] = document_hash
         else:
-            raise Exception('Please provide a document or a document hash')
+            raise Exception('Please provide a document')
 
         if cancel:
             params['cancel'] = cancel
 
-        return self._request('/document', "DELETE", business_id=business_id, params=params)
+        return self._request('/document', 'DELETE', params=params)
 
-    def download_final_pdf(self, document, path, business_id=None, audit_trail=1, document_hash=None):
+    def download_final_document_to_path(self, document, path, audit_trail=1):
         """
         Documentation: https://eversign.com/api/documentation/methods#download-final-pdf
 
@@ -279,20 +286,18 @@ class Client(object):
         Args:
             document (eversign.Document)
             path (str): Local path on the file system
-            business_id (int, optional): Defaults to the primary business_id.
             audit_trail (int, optional): Defaults to 1.
-            document_hash (str, optional): If a document_hash is specified, it will override the document argument.
 
         Returns:
             True for success, raises exception on failure.
         """
         return self._download('/download_final_document', path, params={
-            'business_id': business_id or self.business_id,
-            'document_hash': document_hash or self._get_document_hash(document),
+            'business_id': self.business_id,
+            'document_hash': self._get_document_hash(document),
             'audit_trail': audit_trail
         })
 
-    def download_raw_document(self, document, path, business_id=None):
+    def download_raw_document_to_path(self, document, path):
         """
         Documentation: https://eversign.com/api/documentation/methods#download-original-pdf
 
@@ -301,17 +306,16 @@ class Client(object):
         Args:
             document (eversign.Document)
             path (str): Local path on the file system
-            business_id (int, optional): Defaults to the primary business_id.
 
         Returns:
             True for success, raises exception on failure.
         """
         return self._download('/download_raw_document', path, params={
-            'business_id': business_id or self.business_id,
+            'business_id': self.business_id,
             'document_hash': self._get_document_hash(document)
         })
 
-    def upload_file(self, path, business_id=None):
+    def upload_file(self, path):
         """
         Documentation: https://eversign.com/api/documentation/methods#upload-file
 
@@ -319,7 +323,6 @@ class Client(object):
 
         Args:
             path (str): Local path on the file system
-            business_id (int, optional): Defaults to the primary business_id.
 
         Returns:
             JSON response from the API, exception on error
@@ -328,7 +331,7 @@ class Client(object):
             url = self.api_base + '/file'
             params = dict()
             params['access_key'] = self.access_key
-            params['business_id'] = business_id or self.business_id
+            params['business_id'] = self.business_id
 
             response = requests.post(url, files={
                 'upload': open(path, 'rb')
@@ -343,6 +346,22 @@ class Client(object):
             return json.loads(response.text)
         else:
             raise Exception(response.text)
+
+    def _get_documents(self, type='all'):
+        return_type = Document
+        if type in ['templates', 'templates_archived', 'template_drafts']:
+            return_type = Template
+
+        try:
+            return self._request(
+                '/document',
+                params={'type': type},
+                return_type=return_type)
+        except Exception as e:
+            if e.type == 'no_result':
+                return []
+            else:
+                raise e
 
     def _role_needed(self, obj, name):
         for element in obj:
@@ -363,12 +382,12 @@ class Client(object):
         except Exception:
             raise
 
-    def _request(self, url, method="GET", business_id=None, params=dict(), data=None,
+    def _request(self, url, method="GET", params=dict(), data=None,
                  return_type=None):
         url = self.api_base + url
 
         params['access_key'] = self.access_key
-        params['business_id'] = business_id or self.business_id
+        params['business_id'] = self.business_id
 
         try:
             if method in ["GET", "DELETE"]:

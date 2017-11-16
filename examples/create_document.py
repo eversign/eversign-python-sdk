@@ -1,8 +1,9 @@
 import sys
+import config
 sys.path.append("..")
 import eversign
 
-client = eversign.Client("MY_KEY")
+client = eversign.Client(config.access_key)
 
 document = eversign.Document()
 document.title = "Tile goes here"

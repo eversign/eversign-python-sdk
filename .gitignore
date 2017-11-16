@@ -1,3 +1,6 @@
+examples/config.py
+examples/*.pdf
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
