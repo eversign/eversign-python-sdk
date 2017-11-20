@@ -76,6 +76,7 @@ Your document object can now be saved using the `create_document_from_template()
 
 ````python
 document = client.create_document_from_template(template)
+print(document.document_hash)
 ````
 
 ### Creating a document [Method: Create Document]
@@ -93,6 +94,7 @@ Signers are added to an existing document object by instantiating the `Signer` o
 
 ````python
 signer = eversign.Signer()
+signer.id = '1'
 signer.role = 'Testrole'
 signer.name = 'John Doe'
 signer.email = 'john.doe@eversign.com'
@@ -154,10 +156,10 @@ saved_document = client.create_document(document)
 
 #### Loading a document
 
-A document is loaded by either passing a `Document` into the `get_document()` function, or passing its document hash `get_document(document_hash='MY_HASH')`. Attention: a provided document_hash overrides a passed document.
+A document is loaded by passing a document hash `get_document_by_hash(document_hash='MY_HASH')`.
 
 ```python
-document = client.get_document(document_hash='MY_HASH')
+document = client.get_document_by_hash(document_hash='MY_HASH')
 ```
 
 #### Downloading the raw or final document
@@ -172,20 +174,16 @@ client.download_raw_document_to_path(document, 'raw.pdf')
 The Client class is also capable fo listing all available documents templates based on their status. Each method below returns an array of document objects.
 
 ```python
-client.list_documents()
-client.list_templates()
+client.get_all_documents()
+client.get_completed_documents()
+client.get_draft_documents()
+client.get_canceled_documents()
+client.get_action_required_documents()
+client.get_waiting_for_others_documents()
 
-# Other Methods for getting documents are:
-
-client.list_documents('my_action_required')
-client.list_documents('waiting_for_others')
-client.list_documents('completed')
-client.list_documents('drafts')
-client.list_documents('cancelled')
-
-client.list_templates('templates_archived')
-client.list_templates('template_drafts')
-
+client.get_templates()
+client.get_archived_templates()
+client.get_draft_templates()
 ```
 
 #### Delete or cancel a document

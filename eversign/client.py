@@ -118,7 +118,8 @@ class Client(object):
                 'expires': template.expires,
                 'signers': primitive_document['signers'],
                 'recipients': primitive_document['recipients'],
-                'fields': template._get_fields_for_template()
+                'fields': template._get_fields_for_template(),
+                'embedded_signing_enabled': template.embedded_signing_enabled
             }
 
             return self._request('/document', method='POST', data=data, return_type=Document)
@@ -153,7 +154,31 @@ class Client(object):
         """
         return self._get_documents('all')
 
-    def get_cancelled_documents(self):
+    def get_completed_documents(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Retrieves all completed documents from eversign API
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('completed')
+
+    def get_draft_documents(self):
+        """
+        Documentation: https://eversign.com/api/documentation/methods#list-documents
+
+        Retrieves all draft documents from eversign API
+
+        Returns:
+            List of eversign.Document object for success, raises Exception for failure.
+
+        """
+        return self._get_documents('draft')
+
+    def get_canceled_documents(self):
         """
         Documentation: https://eversign.com/api/documentation/methods#list-documents
 
@@ -163,7 +188,7 @@ class Client(object):
             List of eversign.Document object for success, raises Exception for failure.
 
         """
-        return self._get_documents('cancelled')
+        return self._get_documents('canceled')
 
     def get_action_required_documents(self):
         """
