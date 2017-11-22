@@ -19,3 +19,5 @@ from eversign.business import Business
 from eversign.log import Log
 
 api_base = 'https://api.eversign.com/api'
+oauth_base = 'https://eversign.com/oauth'
+debug = False

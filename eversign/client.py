@@ -19,12 +19,19 @@ class Client(object):
     business_id = None
     debug = False
 
-    def __init__(self, access_key=None, business_id=None, debug=False):
+    def __init__(self, access_key=None, business_id=None):
 
-        self.access_key = access_key
+        self.headers['User-Agent'] = 'Eversign_PHP_SDK'
+
+        if access_key.starts_with('Bearer '):
+            self.set_oauth_access_token(access_key)
+        else:
+            self.access_key = access_key
+
         self.api_base = eversign.api_base
+        self.oauth_base = eversign.oauth_base
 
-        if debug:
+        if eversign.debug:
             self.debug = True
             logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
 
@@ -32,6 +39,27 @@ class Client(object):
             self.business_id = business_id
         else:
             self.fetch_businesses()
+
+    def set_oauth_access_token(self, oauthtoken):
+        if oauthtoken.starts_with('Bearer '): 
+            self.headers['Authorization'] = oauthtoken
+        else:
+            self.headers['Authorization'] = 'Bearer ' + oauthtoken
+
+        self.fetch_businesses()
+
+    def generate_oauth_authorization_url(options)
+        if 'client_id' not in options.keys():
+            raise Exception('Please specify client_id')
+
+        if 'state' not in options.keys():
+            raise Exception('Please specify state')
+
+        return self.oauth_base + 'authorize?client_id=' + options['client_id'] + '&state=' + options['state']
+
+
+    def request_oauth_token(self, token_request):
+        pass
 
     def set_selected_business(self, business):
         self.business_id = business.business_id
