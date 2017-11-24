@@ -7,6 +7,7 @@ import os.path
 import os
 import errno
 import logging
+
 from pprint import pprint
 
 from .document import Document, Template
@@ -15,6 +16,7 @@ from .utils import EversignException
 
 
 class Client(object):
+    headers = {}
     businesses = None
     business_id = None
     debug = False
@@ -23,10 +25,11 @@ class Client(object):
 
         self.headers['User-Agent'] = 'Eversign_PHP_SDK'
 
-        if access_key.starts_with('Bearer '):
-            self.set_oauth_access_token(access_key)
-        else:
-            self.access_key = access_key
+        if access_key:
+            if access_key.startswith('Bearer '):
+                self.set_oauth_access_token(access_key)
+            else:
+                self.access_key = access_key
 
         self.api_base = eversign.api_base
         self.oauth_base = eversign.oauth_base
@@ -37,7 +40,7 @@ class Client(object):
 
         if business_id:
             self.business_id = business_id
-        else:
+        elif access_key:
             self.fetch_businesses()
 
     def set_oauth_access_token(self, oauthtoken):
@@ -48,18 +51,25 @@ class Client(object):
 
         self.fetch_businesses()
 
-    def generate_oauth_authorization_url(options)
-        if 'client_id' not in options.keys():
-            raise Exception('Please specify client_id')
+    def generate_oauth_authorization_url(self, options):
+        self._check_arguments(['client_id', 'state'], options)
 
-        if 'state' not in options.keys():
-            raise Exception('Please specify state')
+        return eversign.oauth_base + '/authorize?client_id=' + options['client_id'] + '&state=' + options['state']
 
-        return self.oauth_base + 'authorize?client_id=' + options['client_id'] + '&state=' + options['state']
+    def request_oauth_token(self, options):
+        self._check_arguments(['client_id', 'client_secret', 'code', 'state'], options)
 
+        r = requests.post(eversign.oauth_base + '/token', data = options)
+        if r.status_code == 200:
+            response_obj = json.loads(r.text)
 
-    def request_oauth_token(self, token_request):
-        pass
+            if "error" in response_obj:
+                raise Exception(response_obj['message'])
+
+            if response_obj['success']:
+                return response_obj['access_token']
+
+        raise Exception('no success')
 
     def set_selected_business(self, business):
         self.business_id = business.business_id
@@ -410,6 +420,11 @@ class Client(object):
             return json.loads(response.text)
         else:
             raise Exception(response.text)
+
+    def _check_arguments(self, arguments=[], options=()):
+        for argument in arguments:
+            if argument not in options:
+                raise Exception('Please specify ' + argument)
 
     def _get_documents(self, type='all'):
         return_type = Document
