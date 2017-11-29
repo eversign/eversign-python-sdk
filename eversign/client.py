@@ -16,6 +16,7 @@ from .utils import EversignException
 
 
 class Client(object):
+    access_key = None
     headers = {}
     businesses = None
     business_id = None
@@ -36,7 +37,8 @@ class Client(object):
 
         if eversign.debug:
             self.debug = True
-            logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(message)s')
+            logging.basicConfig(level=logging.DEBUG,
+                                format='%(asctime)s %(message)s')
 
         if business_id:
             self.business_id = business_id
@@ -44,7 +46,7 @@ class Client(object):
             self.fetch_businesses()
 
     def set_oauth_access_token(self, oauthtoken):
-        if oauthtoken.starts_with('Bearer '): 
+        if oauthtoken.startswith('Bearer '):
             self.headers['Authorization'] = oauthtoken
         else:
             self.headers['Authorization'] = 'Bearer ' + oauthtoken
@@ -57,9 +59,10 @@ class Client(object):
         return eversign.oauth_base + '/authorize?client_id=' + options['client_id'] + '&state=' + options['state']
 
     def request_oauth_token(self, options):
-        self._check_arguments(['client_id', 'client_secret', 'code', 'state'], options)
+        self._check_arguments(
+            ['client_id', 'client_secret', 'code', 'state'], options)
 
-        r = requests.post(eversign.oauth_base + '/token', data = options)
+        r = requests.post(eversign.oauth_base + '/token', data=options)
         if r.status_code == 200:
             response_obj = json.loads(r.text)
 
@@ -465,12 +468,15 @@ class Client(object):
                  return_type=None):
         url = self.api_base + url
 
-        params['access_key'] = self.access_key
+        if self.access_key:
+            params['access_key'] = self.access_key
+
         params['business_id'] = self.business_id
 
         try:
             if method in ["GET", "DELETE"]:
-                response = requests.request(method, url, params=params)
+                response = requests.request(
+                    method, url, headers=self.headers, params=params)
 
             elif method == "POST":
                 if self.debug:
