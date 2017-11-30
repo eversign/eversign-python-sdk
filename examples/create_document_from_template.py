@@ -1,5 +1,6 @@
 import sys
 import config
+sys.path.append("..")
 import eversign
 
 client = eversign.Client(config.access_key)
@@ -9,7 +10,8 @@ document_template.template_id = config.template_id
 document_template.title = 'Tile goes here'
 document_template.message = 'my message'
 
-signer = eversign.Signer(name='Jane Doe', email=config.signer_email, role='Client')
+signer = eversign.Signer(
+    name='Jane Doe', email=config.signer_email, role='Client')
 document_template.add_signer(signer)
 
 field = eversign.TextField()

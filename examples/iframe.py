@@ -1,5 +1,6 @@
 import sys
 import config
+sys.path.append("..")
 import eversign
 from pprint import pprint
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -11,6 +12,7 @@ client = eversign.Client(config.access_key, config.business_id)
 
 
 class myHandler(BaseHTTPRequestHandler):
+
     def do_GET(self):
         if self.path != '/':
             self.send_response(404)
@@ -52,7 +54,8 @@ class myHandler(BaseHTTPRequestHandler):
         with open(dir_path + '/iframe.html', 'r') as myfile:
             template_html = myfile.read()
 
-        template_html = '<script>var signingUrl = "' + signing_url + '";</script>' + template_html;
+        template_html = '<script>var signingUrl = "' + \
+            signing_url + '";</script>' + template_html
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html')

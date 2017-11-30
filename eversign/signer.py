@@ -35,6 +35,7 @@ class SignerModel(Model):
     viewed = BoolIntType()
     status = StringType()
     embedded_signing_url = StringType()
+    deliver_email = BoolIntType()
 
     class Options:
         serialize_when_none = False
