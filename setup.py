@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='eversign',
-    version='0.2.4',
+    version='1.0',
     packages=['eversign'],
     url='https://github.com/eversign/eversign-python-sdk',
     license='MIT',
