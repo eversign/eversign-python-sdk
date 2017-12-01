@@ -3,9 +3,14 @@
 eversign Python SDK is the official Python Wrapper around the eversign [API](https://eversign.com/api/documentation).
 
 **Quick Links:**
-  - [Create Document Example](/examples/create_document.py)
-  - [Download Document Example](/examples/download_document.py)
-  - [Get Documents Example](/examples/get_documents.py)
+  - [Create Document Example](/example/create_document.py)
+  - [Use Template Example](/example/create_document_from_template.py)
+  - [Document Operations](/example/document_operations.py)
+  - [Create Iframe Signature](/example/iframe.py)
+  - [Create Iframe Signature From Template](/example/iframe_template.py)
+  - [OAuth Flow (start)](/example/oauth.py)
+  - [OAuth Flow (callback)](/example/oauth_token.py)
+
 
 ## Installation
 
