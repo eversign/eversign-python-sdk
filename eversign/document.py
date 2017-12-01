@@ -190,6 +190,7 @@ class DocumentModel(Model):
     created = TimestampType()
     expires = TimestampType()
     meta = DictType(StringType)
+    embedded_signing_enabled = BoolIntType()
 
     class Options:
         serialize_when_none = False

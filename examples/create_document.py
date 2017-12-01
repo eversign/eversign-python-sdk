@@ -1,8 +1,9 @@
 import sys
+import config
 sys.path.append("..")
 import eversign
 
-client = eversign.Client("MY_KEY")
+client = eversign.Client(config.access_key)
 
 document = eversign.Document()
 document.title = "Tile goes here"
@@ -13,13 +14,10 @@ recipient = eversign.Recipient(name="Test", email="john.doe@eversign.com")
 file = eversign.File(name="Test")
 file.file_url = 'raw.pdf'
 
-signer = eversign.Signer(name="Jane Doe", email="jane.doe@eversign.com")
-'''
-or:
 signer = eversign.Signer()
+signer.id="1"
 signer.name = "Jane Doe"
 signer.email = "jane.doe@eversign.com"
-'''
 
 document.add_file(file)
 document.add_signer(signer)
@@ -38,3 +36,4 @@ field.required = 1
 
 document.add_field(field)
 finished_document = client.create_document(document)
+print(finished_document.document_hash)
