@@ -202,3 +202,10 @@ client.cancel_document(document);
 
 ### Contact us
 Any feedback? Please feel free to [contact our support team](https://eversign.com/contact).
+
+### Development
+```
+docker run -ti --rm -p 8000:8000 -v $(pwd):/opt/sdk -w /opt/sdk python:3 bash
+pip install -r requirements.txt
+PYTHONPATH=$(pwd) python examples/create_document.py
+```

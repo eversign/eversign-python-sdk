@@ -9,7 +9,7 @@ document = eversign.Document()
 document.title = "Tile goes here"
 document.message = "tester@gmail.com"
 
-recipient = eversign.Recipient(name="Test", email="john.doe@eversign.com")
+recipient = eversign.Recipient(name="Test", email=config.signer_email)
 
 file = eversign.File(name="Test")
 file.file_url = 'raw.pdf'
@@ -17,7 +17,7 @@ file.file_url = 'raw.pdf'
 signer = eversign.Signer()
 signer.id="1"
 signer.name = "Jane Doe"
-signer.email = "jane.doe@eversign.com"
+signer.email = config.signer_email
 
 document.add_file(file)
 document.add_signer(signer)

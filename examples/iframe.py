@@ -33,6 +33,7 @@ class myHandler(BaseHTTPRequestHandler):
         document.add_file(file)
 
         signer = eversign.Signer(name='Jane Doe', email=config.signer_email)
+        signer.deliver_email = True # false is the default. set this to true to send an additional email to the signer
         document.add_signer(signer)
 
         field = eversign.SignatureField()
