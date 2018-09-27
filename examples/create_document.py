@@ -15,10 +15,11 @@ file = eversign.File(name="Test")
 file.file_url = 'raw.pdf'
 
 signer = eversign.Signer()
-signer.id="1"
+signer.id = "1"
 signer.name = "Jane Doe"
 signer.email = config.signer_email
 
+document.sandbox = True
 document.add_file(file)
 document.add_signer(signer)
 document.add_recipient(recipient)

@@ -6,6 +6,7 @@ import eversign
 client = eversign.Client(config.access_key)
 
 document_template = eversign.Template()
+document_template.sandbox = True
 document_template.template_id = config.template_id
 document_template.title = 'Tile goes here'
 document_template.message = 'my message'
