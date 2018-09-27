@@ -3,7 +3,7 @@ import config
 sys.path.append("..")
 import eversign
 
-client = eversign.Client(config.token)
+client = eversign.Client(config.access_key)
 
 document = eversign.Document()
 document.title = "Tile goes here"
