@@ -2,8 +2,20 @@ import sys
 import config
 sys.path.append("..")
 import eversign
+"""
+client = eversign.Client(config.token)
+"""
+client = eversign.Client()
 
-client = eversign.Client(config.access_key)
+oauth_request = {
+    'client_id': config.oauth_client_id,
+    'client_secret': config.oauth_client_secret,
+    'code': config.code,
+    'state': config.state
+}
+
+token = client.request_oauth_token(oauth_request)
+client.set_oauth_access_token(token)
 
 document = eversign.Document()
 document.title = "Tile goes here"
@@ -15,10 +27,11 @@ file = eversign.File(name="Test")
 file.file_url = 'raw.pdf'
 
 signer = eversign.Signer()
-signer.id="1"
+signer.id = "1"
 signer.name = "Jane Doe"
 signer.email = config.signer_email
 
+document.sandbox = True
 document.add_file(file)
 document.add_signer(signer)
 document.add_recipient(recipient)
