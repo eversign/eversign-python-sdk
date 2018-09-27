@@ -482,7 +482,7 @@ class Client(object):
                 if self.debug:
                     logging.debug(data)
                 response = requests.request(
-                    method, url, params=params, json=data)
+                    method, url, headers=self.headers, params=params, json=data)
 
             else:
                 raise Exception("Method not supported")
