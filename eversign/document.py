@@ -164,6 +164,7 @@ class Template(Document):
 
 class DocumentModel(Model):
 
+    sandbox = BoolIntType()
     document_hash = StringType()
     template_id = StringType()
     requester_email = StringType()
