@@ -341,7 +341,7 @@ class Client(object):
         """
         params = dict()
         if type(document) is Document:
-            if document.is_cancelled or document.is_draft:
+            if cancel or document.is_cancelled or document.is_draft:
                 params['document_hash'] = self._get_document_hash(document)
             else:
                 raise Exception(
