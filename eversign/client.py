@@ -478,7 +478,7 @@ class Client(object):
                 response = requests.request(
                     method, url, headers=self.headers, params=params)
 
-            elif method == "POST":
+            elif method in ["POST", "PUT"]:
                 if self.debug:
                     logging.debug(data)
                 response = requests.request(
