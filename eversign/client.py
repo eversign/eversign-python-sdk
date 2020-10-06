@@ -24,7 +24,7 @@ class Client(object):
 
     def __init__(self, access_key=None, business_id=None):
 
-        self.headers['User-Agent'] = 'Eversign_PHP_SDK'
+        self.headers['User-Agent'] = 'Eversign_Python_SDK'
 
         if access_key:
             if access_key.startswith('Bearer '):
