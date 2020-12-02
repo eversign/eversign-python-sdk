@@ -134,3 +134,11 @@ class AttachmentField(Field):
     def __init__(self, **kwargs):
         kwargs['type'] = 'attachment'
         super(self.__class__, self).__init__(**kwargs)
+
+
+class CheckboxGroupField(CheckboxField):
+    merge_field = True
+
+    def __init__(self, **kwargs):
+        kwargs['type'] = 'checkbox_group'
+        super(self.__class__, self).__init__(**kwargs)
