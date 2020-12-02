@@ -13,7 +13,8 @@ from eversign.field import (
     CheckboxField,
     RadioField,
     DropdownField,
-    AttachmentField
+    AttachmentField,
+    CheckboxGroupField
 )
 from eversign.business import Business
 from eversign.log import Log
