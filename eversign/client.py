@@ -151,6 +151,7 @@ class Client(object):
 
             data = {
                 'template_id': template.document_hash or template.template_id,
+                'sandbox': template.sandbox,
                 'title': template.title,
                 'message': template.title,
                 'redirect': template.redirect,
