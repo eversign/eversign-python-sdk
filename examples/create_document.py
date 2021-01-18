@@ -20,6 +20,10 @@ signer.name = "Jane Doe"
 signer.email = config.signer_email
 
 document.sandbox = True
+
+# To get embedded_claim_url in response, document has to be created as a draft
+# document.is_draft = True
+
 document.add_file(file)
 document.add_signer(signer)
 document.add_recipient(recipient)

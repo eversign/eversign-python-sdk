@@ -168,6 +168,7 @@ class DocumentModel(Model):
     document_hash = StringType()
     template_id = StringType()
     requester_email = StringType()
+    embedded_claim_url = StringType()
     title = StringType()
     subject = StringType()
     message = StringType()
