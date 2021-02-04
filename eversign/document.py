@@ -193,6 +193,7 @@ class DocumentModel(Model):
     expires = TimestampType()
     meta = DictType(StringType)
     embedded_signing_enabled = BoolIntType()
+    use_hidden_tags = BoolIntType()
 
     class Options:
         serialize_when_none = False
