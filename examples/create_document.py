@@ -12,7 +12,7 @@ document.message = "tester@gmail.com"
 recipient = eversign.Recipient(name="Test", email=config.signer_email)
 
 file = eversign.File(name="Test")
-file.file_url = 'raw.pdf'
+file.file_url = 'examples/raw.pdf'
 
 signer = eversign.Signer()
 signer.id = "1"
@@ -39,6 +39,14 @@ field.width = 120
 field.height = 35
 field.required = 1
 
+
 document.add_field(field)
+
+# Add custom requester name
+document.custom_requester_name = 'Custom requester name'
+
+# Add custom requester email
+document.custom_requester_email = 'custom.requester@email.com'
+
 finished_document = client.create_document(document)
 print(finished_document.document_hash)

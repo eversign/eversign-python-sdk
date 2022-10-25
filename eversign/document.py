@@ -194,6 +194,8 @@ class DocumentModel(Model):
     meta = DictType(StringType)
     embedded_signing_enabled = BoolIntType()
     use_hidden_tags = BoolIntType()
+    custom_requester_name = StringType()
+    custom_requester_email = StringType()
 
     class Options:
         serialize_when_none = False
